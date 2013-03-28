@@ -1,63 +1,3 @@
-require 'singleton'
-require 'sqlite3'
-
-class QuestionDatabase < SQLite3::Database
-  include Singleton
-
-  def initialize
-    super("questions.db")
-    self.results_as_hash = true
-    self.type_translation = true
-  end
-end
-
-DB ||= QuestionDatabase.instance
-
-class User
-  attr_reader :id, :fname, :lname
-
-  def self.find_by_name(fname, lname)
-    query = <<-SQL
-      SELECT *
-      FROM users
-      WHERE fname = ? AND lname = ?
-    SQL
-
-    response = DB.execute(query, fname, lname)[0]
-    User.new(*response.values)
-  end
-
-  def self.find_by_id(fname, lname)
-    query = <<-SQL
-      SELECT *
-      FROM users
-      WHERE fname = ? AND lname = ?
-    SQL
-
-    response = DB.execute(query, fname, lname)[0]
-    User.new(*response.values)
-  end
-
-  def initialize(id, fname, lname, is_instructor)
-    @id = id
-    @fname = fname
-    @lname = lname
-    @is_instructor = is_instructor
-  end
-
-  def asked_questions
-    Question.find_by_user_id(self.id)
-  end
-
-  def is_instructor
-    @is_instructor == 1
-  end
-
-  def to_s
-    "<User ##{id} #{fname} #{lname}>"
-  end
-end
-
 class Question
   attr_reader :id, :title, :body, :user_id, :num_follow, :likes
   def self.find_by_id(id)
@@ -130,15 +70,3 @@ class Question
     "<Question ##{id} #{title} followers: #{num_follow}>"
   end
 end
-
-class Reply
-  def initialize(id, parent, body, q_id, user_id)
-    @id = id
-    @parent = parent
-    @body = body
-    @q_id = q_id
-    @user_id = user_id
-  end
-
-end
-
