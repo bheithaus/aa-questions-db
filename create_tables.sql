@@ -19,14 +19,17 @@ CREATE TABLE IF NOT EXISTS question_followers (
   FOREIGN KEY(follower_id) REFERENCES users(id),
   FOREIGN KEY(question_id) REFERENCES questions(id)
 );
---
--- CREATE TABLE question_replies(
---   id INTEGER PRIMARY KEY,
---   body TEXT NOT NULL,
---   FOREIGN KEY(subject) REFERENCES questions(id),
---   parent INTEGER
--- );
---
+
+CREATE TABLE IF NOT EXISTS question_replies(
+  id INTEGER PRIMARY KEY,
+  parent INTEGER,
+  body TEXT NOT NULL,
+  q_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES users(id),
+  FOREIGN KEY(q_id) REFERENCES questions(id)
+);
+
 -- CREATE TABLE questions_actions(
 --   FOREIGN KEY(question_id) REFERENCES questions(id),
 --   type VARCHAR(6)
@@ -39,12 +42,18 @@ CREATE TABLE IF NOT EXISTS question_followers (
 
 -- INSERTS BELOW HERE
 
-INSERT INTO question_followers VALUES
-(1,3),
-(1,4),
-(2,1),
-(3,2)
-
+INSERT INTO question_replies
+('parent', 'body', 'q_id', 'user_id')
+VALUES
+(NULL,'This IS SQL, thanks for your detailed question',1,5),
+(1,'are you sure this is sql?',1,3),
+(NULL,'I dont have time for this!',3,5),
+(NULL,'A good place to use self join is finding bus',4,5)
+-- INSERT INTO question_followers VALUES
+-- (1,3),
+-- (1,4),
+-- (2,1),
+-- (3,2)
 
 -- INSERT INTO users
 -- ('fname','lname','is_instructor')

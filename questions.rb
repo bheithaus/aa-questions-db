@@ -129,6 +129,16 @@ class Question
   def to_s
     "<Question ##{id} #{title} followers: #{num_follow}>"
   end
+end
+
+class Reply
+  def initialize(id, parent, body, q_id, user_id)
+    @id = id
+    @parent = parent
+    @body = body
+    @q_id = q_id
+    @user_id = user_id
+  end
 
 end
 
