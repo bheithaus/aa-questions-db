@@ -8,7 +8,7 @@ class Question
     SQL
     question = DB.execute(query, id)[0]
 
-    Question.new(*question.values)
+    Question.new(question)
   end
 
   def self.find_by_user_id(user_id)
@@ -20,13 +20,13 @@ class Question
     questions = DB.execute(query, user_id)
 
     questions.map do |question|
-      Question.new(*question.values)
+      Question.new(question)
     end
   end
 
   def self.most_followed(n)
     query = <<-SQL
-      SELECT q.*, COUNT(f.question_id)
+      SELECT q.*, COUNT(f.question_id) as followers
       FROM questions q JOIN question_followers f
       ON q.id = f.question_id
       GROUP BY f.question_id
@@ -36,18 +36,32 @@ class Question
     most_followed = DB.execute(query, n)
 
     most_followed.map do |question|
-      Question.new(*question.values)
+      Question.new(question)
     end
   end
 
-  def initialize(id, title, body,
-                  user_id, num_follow = 0, likes = 0)
-    @id = id
-    @title = title
-    @body = body
-    @user_id = user_id
-    @num_follow = num_follow
-    @likes = likes
+  def self.most_liked(n)
+    query = <<-SQL
+      SELECT q.*, COUNT(*) AS num_likes
+      FROM questions q JOIN question_like l
+      ON q.id = l.question_id
+      GROUP BY q.id
+      ORDER BY COUNT(*) DESC
+      LIMIT ?
+     SQL
+    most_liked = DB.execute(query, n)
+    most_liked.map do |question|
+      Question.new(question)
+    end
+  end
+
+  def initialize(options = {})
+    @id = options['id']
+    @title = options['title']
+    @body = options['body']
+    @user_id = options['user_id']
+    @num_follow = options['num_follow'] || self.followers.count
+    @likes = options['likes'] || self.num_likes
   end
 
   def asking_student
@@ -64,9 +78,23 @@ class Question
         WHERE questions.id = ?
       SQL
     followers = DB.execute(query, id)
+
+    followers.map do |follower|
+      User.new(follower)
+    end
+  end
+
+  def num_likes
+    query = <<-SQL
+      SELECT count(*) AS num_likes
+      FROM question_like
+      WHERE question_id = ?
+    SQL
+    # =>
+    DB.execute(query, id)[0]['num_likes']
   end
 
   def to_s
-    "<Question ##{id} #{title} followers: #{num_follow}>"
+    "<Question ##{id} #{title} followers: #{num_follow} likes: #{likes}>"
   end
 end

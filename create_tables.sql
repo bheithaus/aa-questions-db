@@ -35,20 +35,38 @@ CREATE TABLE IF NOT EXISTS question_replies(
 --   type VARCHAR(6)
 -- );
 --
--- CREATE TABLE question_like(
---   FOREIGN KEY(user_id) REFERENCES users(id),
---   FOREIGN KEY(question_id) REFERENCES questions(id)
--- );
+CREATE TABLE IF NOT EXISTS question_like(
+  user_id INTEGER NOT NULL,
+  question_id INTEGER NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES users(id),
+  FOREIGN KEY(question_id) REFERENCES questions(id)
+);
 
 -- INSERTS BELOW HERE
 
-INSERT INTO question_replies
-('parent', 'body', 'q_id', 'user_id')
-VALUES
-(NULL,'This IS SQL, thanks for your detailed question',1,5),
-(1,'are you sure this is sql?',1,3),
-(NULL,'I dont have time for this!',3,5),
-(NULL,'A good place to use self join is finding bus',4,5)
+-- INSERT INTO question_like
+-- VALUES
+-- (1,1),
+-- (1,3),
+-- (1,2),
+-- (2,1),
+-- (2,4),
+-- (3,4),
+-- (5,4),
+-- (5,4);
+
+
+
+-- INSERT INTO question_replies
+-- ('parent', 'body', 'q_id', 'user_id')
+-- VALUES
+-- (1,'testing',1,5)
+-- (0,'This IS SQL, thanks for your detailed question',1,5),
+-- (1,'are you sure this is sql?',1,3),
+-- (0,'I dont have time for this!',3,5),
+-- (0,'A good place to use self join is finding bus stops',4,5),
+-- (4,'is that because you can match stops to other stops within the same table?',4,1)
+
 -- INSERT INTO question_followers VALUES
 -- (1,3),
 -- (1,4),

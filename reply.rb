@@ -12,15 +12,15 @@ class Reply
     SQL
 
     most_replied = DB.execute(query)[0]
-    Reply.new(*most_replied.values)
+    Reply.new(most_replied)
   end
 
-  def initialize(id, parent, body, q_id, user_id)
-    @id = id
-    @parent = parent
-    @body = body
-    @q_id = q_id
-    @user_id = user_id
+  def initialize(options = {})
+    @id = options['id']
+    @parent = options['parent']
+    @body = options['body']
+    @q_id = options['q_id']
+    @user_id = options['user_id']
   end
 
   def replies
@@ -32,7 +32,7 @@ class Reply
     replies = DB.execute(query, self.id)
 
     replies.map do |reply|
-      Reply.new(*reply.values)
+      Reply.new(reply)
     end
   end
 
