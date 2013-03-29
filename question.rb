@@ -1,4 +1,5 @@
 class Question
+  #REV: I think Ned puts the attr_readers down by #initialize
   attr_reader :id, :title, :body, :user_id, :num_follow, :likes
   def self.find_by_id(id)
     query = <<-SQL
