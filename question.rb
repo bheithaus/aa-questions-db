@@ -1,3 +1,4 @@
+require './model'
 class Question < Model
   attr_reader :title, :body, :user_id, :likes
   attr_writer :num_follow
@@ -20,7 +21,7 @@ class Question < Model
   end
 
   def save
-    save(title, body, user_id)
+    save_helper(self, title, body, user_id)
   end
 
   def num_follow

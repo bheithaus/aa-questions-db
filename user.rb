@@ -12,7 +12,7 @@ class User < Model
   end
 
   def self.columns
-    ['id', 'fname', 'lname', 'is_instructor']
+    ['fname', 'lname', 'is_instructor']
   end
 
   def self.table_name
@@ -38,7 +38,7 @@ class User < Model
   end
 
   def save
-    save(fname,lname,is_instructor)
+    save_helper(self,fname,lname,is_instructor)
   end
 
   def average_karma

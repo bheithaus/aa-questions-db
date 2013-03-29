@@ -1,3 +1,5 @@
+require './model'
+
 class Reply < Model
   attr_reader :parent, :body, :q_id, :user_id
 
@@ -18,7 +20,7 @@ class Reply < Model
   end
 
   def save
-    save(parent, body, q_id, user_id)
+    save_helper(self,parent, body, q_id, user_id)
   end
 
   def self.find_by_id(id)

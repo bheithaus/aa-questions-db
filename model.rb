@@ -19,19 +19,20 @@ class Model
     	params_array.map {|params| cls.new(params) }
 	end
 
-	def self.save(*params)
-	    if self.id
+	def save_helper(entity,*params)
+	    if entity.id
 	      query = <<-SQL
 	        UPDATE #{self.table_name}
 	           SET #{self.columns.join(' = ?,')+" = ?,"}
 	         WHERE id = ?
 	      SQL
-	      DB.execute(query, *params, self.id)
+	      DB.execute(query, *params, entity.id)
 	    else
 	      query = <<-SQL 
-	      INSERT INTO users (#{self.columns.join(",")} ) 
-	           VALUES (#{(["?"]*self.columns.count).join(",")}) 
+	      INSERT INTO users (#{entity.class.columns.join(",")} ) 
+	           VALUES (#{(["?"]*entity.class.columns.count).join(",")}) 
 	      SQL
+	      p query
 	      DB.execute(query, *params)
 	      @id = DB.last_insert_row_id()
 	    end
