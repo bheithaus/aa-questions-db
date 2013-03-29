@@ -1,29 +1,38 @@
-class Question
-  attr_reader :id, :title, :body, :user_id, :likes
+class Question < Model
+  attr_reader :title, :body, :user_id, :likes
   attr_writer :num_follow
+
+  def initialize(options = {})
+    @id = options['id']
+    @title = options['title']
+    @body = options['body']
+    @user_id = options['user_id']
+    @num_follow = options['num_follow'] || self.followers
+    @likes = options['likes'] || self.num_likes
+  end
+
+  def self.columns
+    ['title', 'body', 'user_id']
+  end
+
+  def self.table_name
+    'questions'
+  end
+
+  def save
+    save(title, body, user_id)
+  end
 
   def num_follow
     @num_follow.count
   end
 
   def self.find_by_id(id)
-    query = <<-SQL
-      SELECT *
-        FROM questions
-       WHERE id = ?
-    SQL
-
-    Query_helper.single_query(Question, query, id)
+    single_query(Question, q(self.table_name, 'id'), id)
   end
 
   def self.find_by_user_id(user_id)
-    query = <<-SQL
-      SELECT *
-        FROM questions
-       WHERE user_id = ?
-    SQL
-
-    Query_helper.multi_query(Question, query, user_id)
+    single_query(Question, q(self.table_name, 'user_id'), user_id)
   end
 
   def self.most_followed(n)
@@ -36,7 +45,7 @@ class Question
        LIMIT ?
     SQL
 
-    Query_helper.multi_query(Question, query, n)
+    multi_query(Question, query, n)
   end
 
   def self.most_liked(n)
@@ -49,16 +58,7 @@ class Question
        LIMIT ?
      SQL
 
-    Query_helper.multi_query(Question, query, n)
-  end
-
-  def initialize(options = {})
-    @id = options['id']
-    @title = options['title']
-    @body = options['body']
-    @user_id = options['user_id']
-    @num_follow = options['num_follow'] || self.followers
-    @likes = options['likes'] || self.num_likes
+    multi_query(Question, query, n)
   end
 
   def asking_student
@@ -75,7 +75,7 @@ class Question
        WHERE questions.id = ?
       SQL
 
-    Query_helper.multi_query(User, query, id)
+    Question.multi_query(User, query, id)
   end
 
   def num_likes
