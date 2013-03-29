@@ -1,58 +1,55 @@
 class Question
-  attr_reader :id, :title, :body, :user_id, :num_follow, :likes
+  attr_reader :id, :title, :body, :user_id, :likes
+  attr_writer :num_follow
+
+  def num_follow
+    @num_follow.count
+  end
+
   def self.find_by_id(id)
     query = <<-SQL
       SELECT *
-      FROM questions
-      WHERE id = ?
+        FROM questions
+       WHERE id = ?
     SQL
-    question = DB.execute(query, id)[0]
 
-    Question.new(question)
+    Query_helper.single_query(Question, query, id)
   end
 
   def self.find_by_user_id(user_id)
     query = <<-SQL
       SELECT *
-      FROM questions
-      WHERE user_id = ?
+        FROM questions
+       WHERE user_id = ?
     SQL
-    questions = DB.execute(query, user_id)
 
-    questions.map do |question|
-      Question.new(question)
-    end
+    Query_helper.multi_query(Question, query, user_id)
   end
 
   def self.most_followed(n)
     query = <<-SQL
       SELECT q.*, COUNT(f.question_id) as followers
-      FROM questions q JOIN question_followers f
-      ON q.id = f.question_id
-      GROUP BY f.question_id
-      ORDER BY COUNT(f.question_id) DESC
-      LIMIT ?
+        FROM questions q JOIN question_followers f
+          ON q.id = f.question_id
+       GROUP BY f.question_id
+       ORDER BY COUNT(f.question_id) DESC
+       LIMIT ?
     SQL
-    most_followed = DB.execute(query, n)
 
-    most_followed.map do |question|
-      Question.new(question)
-    end
+    Query_helper.multi_query(Question, query, n)
   end
 
   def self.most_liked(n)
     query = <<-SQL
       SELECT q.*, COUNT(*) AS num_likes
-      FROM questions q JOIN question_like l
-      ON q.id = l.question_id
-      GROUP BY q.id
-      ORDER BY COUNT(*) DESC
-      LIMIT ?
+        FROM questions q JOIN question_like l
+          ON q.id = l.question_id
+       GROUP BY q.id
+       ORDER BY COUNT(*) DESC
+       LIMIT ?
      SQL
-    most_liked = DB.execute(query, n)
-    most_liked.map do |question|
-      Question.new(question)
-    end
+
+    Query_helper.multi_query(Question, query, n)
   end
 
   def initialize(options = {})
@@ -60,7 +57,7 @@ class Question
     @title = options['title']
     @body = options['body']
     @user_id = options['user_id']
-    @num_follow = options['num_follow'] || self.followers.count
+    @num_follow = options['num_follow'] || self.followers
     @likes = options['likes'] || self.num_likes
   end
 
@@ -72,25 +69,22 @@ class Question
     query = <<-SQL
       SELECT users.*
         FROM users JOIN question_followers
-        ON users.id = question_followers.follower_id
+          ON users.id = question_followers.follower_id
         JOIN questions
-        ON questions.id = question_followers.question_id
-        WHERE questions.id = ?
+          ON questions.id = question_followers.question_id
+       WHERE questions.id = ?
       SQL
-    followers = DB.execute(query, id)
 
-    followers.map do |follower|
-      User.new(follower)
-    end
+    Query_helper.multi_query(User, query, id)
   end
 
   def num_likes
     query = <<-SQL
       SELECT count(*) AS num_likes
-      FROM question_like
-      WHERE question_id = ?
+        FROM question_like
+       WHERE question_id = ?
     SQL
-    # =>
+
     DB.execute(query, id)[0]['num_likes']
   end
 

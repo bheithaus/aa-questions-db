@@ -4,15 +4,14 @@ class Reply
   def self.most_replied
     query = <<-SQL
       SELECT a.*
-      FROM question_replies a JOIN question_replies b
-      ON a.id = b.parent
-      GROUP BY a.id
-      ORDER BY COUNT(*) DESC
-      LIMIT 1
+        FROM question_replies a JOIN question_replies b
+          ON a.id = b.parent
+       GROUP BY a.id
+       ORDER BY COUNT(*) DESC
+       LIMIT 1
     SQL
 
-    most_replied = DB.execute(query)[0]
-    Reply.new(most_replied)
+    Query_helper.single_query(Reply, query)
   end
 
   def initialize(options = {})
@@ -26,14 +25,11 @@ class Reply
   def replies
     query = <<-SQL
       SELECT *
-      FROM question_replies
-      WHERE parent = ?
+        FROM question_replies
+       WHERE parent = ?
     SQL
-    replies = DB.execute(query, self.id)
 
-    replies.map do |reply|
-      Reply.new(reply)
-    end
+    Query_helper.multi_query(Reply, query, self.id)
   end
 
   def to_s

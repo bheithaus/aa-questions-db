@@ -3,6 +3,7 @@ require 'sqlite3'
 require './question'
 require './user'
 require './reply'
+require './query_helpers'
 
 class QuestionDatabase < SQLite3::Database
   include Singleton
