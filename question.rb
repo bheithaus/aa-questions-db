@@ -1,5 +1,12 @@
 class Question
   attr_reader :id, :title, :body, :user_id, :num_follow, :likes
+  def self.table_name
+    "questions"
+
+  end
+
+  attr_accessible :title, :body, :user_id
+
   def self.find_by_id(id)
     query = <<-SQL
       SELECT *
