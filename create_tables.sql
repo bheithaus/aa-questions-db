@@ -1,3 +1,4 @@
+--mshopsin very nicely laid out
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   fname VARCHAR(255) NOT NULL,
