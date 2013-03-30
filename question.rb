@@ -22,6 +22,7 @@ class Question
     questions.map do |question|
       Question.new(question)
     end
+    #mshopsin could have been one line
   end
 
   def self.most_followed(n)
@@ -38,6 +39,7 @@ class Question
     most_followed.map do |question|
       Question.new(question)
     end
+    #mshopsin could have been one line
   end
 
   def self.most_liked(n)
@@ -82,6 +84,7 @@ class Question
     followers.map do |follower|
       User.new(follower)
     end
+    #mshopsin this could have been one line
   end
 
   def num_likes
