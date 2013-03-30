@@ -37,6 +37,6 @@ class Reply
   end
 
   def to_s
-    "<Reply to Question ##{q_id}: #{body[0,20]}...>"
+    "<Reply to Question ##{q_id}: #{body[0,20]}...>" #mshopsin nice use of overloading
   end
 end
